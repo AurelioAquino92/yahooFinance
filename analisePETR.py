@@ -10,10 +10,11 @@ filtro['HL'] = hist['High'] - hist['Low']
 filtro['OC'] = hist['Open'] - hist['Close']
 
 # calculando a probabilidade de ocorrer variação X
-nums = []
+x, nums = [], []
 for i in range(100):
+    x.append(i/10)
     nums.append(len(filtro[filtro['HL'] >= i/10])/len(filtro))
 
-plt.plot(nums)
+plt.plot(x, nums)
 plt.grid(True)
 plt.show()
