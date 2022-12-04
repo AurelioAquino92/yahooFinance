@@ -3,6 +3,7 @@ import pandas as pd
 from datetime import datetime
 import os
 
+anos = 5
 acoes = [
     'CPLE6',
     'WIZS3',
@@ -19,7 +20,7 @@ acoes = [
     'ALUP11'
 ]
 hoje = datetime.now()
-passado = hoje.replace(year=hoje.year-3)
+passado = hoje.replace(year=hoje.year-anos)
 dataDiretory = 'data/'
 if not os.path.exists(dataDiretory):
     os.mkdir(dataDiretory)
@@ -37,6 +38,5 @@ for acao in acoes:
     dividendos = dados['Dividends'].loc[dados['Dividends'] != 0]
     dividendoTotal = dividendos.sum()
     precoAtual = dados['Close'].iloc[-1]
-    DYs[acao] = round(100 * dividendoTotal / (3 * precoAtual), 2)
-print(DYs)
+    DYs[acao] = round(100 * dividendoTotal / (anos * precoAtual), 2)
 print(dict(sorted(DYs.items(), key=lambda x: x[1])))
