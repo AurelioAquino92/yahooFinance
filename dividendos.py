@@ -27,7 +27,7 @@ if not os.path.exists(dataDiretory):
 
 DYs = {}
 for acao in acoes:
-    nomeArquivo = dataDiretory + acao + '_' + hoje.strftime('%Y-%m-%d') + '.csv'
+    nomeArquivo = dataDiretory + acao + '_' + str(anos) + 'anos_' + hoje.strftime('%Y-%m-%d') + '.csv'
     try:
         dados = pd.read_csv(nomeArquivo)
     except Exception as err:
