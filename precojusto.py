@@ -25,7 +25,7 @@ dataDiretory = 'data/'
 if not os.path.exists(dataDiretory):
     os.mkdir(dataDiretory)
 
-DYs = {}
+precosJustos = {}
 for acao in acoes:
     nomeArquivo = dataDiretory + acao + '_' + str(anos) + 'anos_' + hoje.strftime('%Y-%m-%d') + '.csv'
     try:
@@ -37,9 +37,10 @@ for acao in acoes:
         print(acao + ' Baixada!')
     dividendos = dados['Dividends'].loc[dados['Dividends'] != 0]
     dividendoTotal = dividendos.sum()
-    precoAtual = dados['Close'].iloc[-1]
-    DYs[acao] = round(100 * dividendoTotal / (anos * precoAtual), 2)
+    precoAtual = round(dados['Close'].iloc[-1], 2)
+    precoJusto = round(dividendoTotal / (anos * 0.06), 2)
+    precosJustos[acao] = round(precoJusto / precoAtual, 2)
 
-print('Média de dividendos (%) dos últimos {anos} anos'.format(anos=anos))
-print(json.dumps(dict(sorted(DYs.items(), key=lambda x: x[1])), indent=2))
+print('Upsides com base nos dividendos dos últimos {anos} anos'.format(anos=anos))
+print(json.dumps(dict(sorted(precosJustos.items(), key=lambda x: x[1])), indent=2))
 
