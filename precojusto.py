@@ -4,7 +4,7 @@ from datetime import datetime
 import os
 import json
 
-anos = 5
+anos = 3
 acoes = [
     'CPLE6',
     'WIZS3',
@@ -31,7 +31,8 @@ for acao in acoes:
     try:
         dados = pd.read_csv(nomeArquivo)
     except Exception as err:
-        print('Arquivo não encontrado! Erro:', err)
+        print('Arquivo não encontrado -> Erro:', err)
+        print('Baixando dados...')
         dados = yf.download(acao + '.SA', start=passado, end=hoje, actions=True)
         dados.to_csv(nomeArquivo)
         print(acao + ' Baixada!')
@@ -39,7 +40,7 @@ for acao in acoes:
     dividendoTotal = dividendos.sum()
     precoAtual = round(dados['Close'].iloc[-1], 2)
     precoJusto = round(dividendoTotal / (anos * 0.06), 2)
-    precosJustos[acao] = round(precoJusto / precoAtual, 2)
+    precosJustos[acao] = round(precoAtual / precoJusto, 2)
 
 print('Upsides com base nos dividendos dos últimos {anos} anos'.format(anos=anos))
 print(json.dumps(dict(sorted(precosJustos.items(), key=lambda x: x[1])), indent=2))
