@@ -6,17 +6,20 @@ import json
 
 anos = 3
 acoes = [
+    'ITSA4',
+    'TAEE11',
     'CPLE6',
+    'SANB11',
+    'CPFE3',
+    'BBDC3',
+    'BBAS3', 
     'WIZS3',
     'PSSA3',
-    'SANB11',
-    'BBAS3', 
-    'BBDC3',
     'ODPV3',
     'CXSE3',
     'BBSE3',
-    'ITSA4',
-    'TAEE11'
+    'B3SA3',
+    'VIVT3'
 ]
 
 hoje = datetime.now()
@@ -36,8 +39,8 @@ for acao in acoes:
         dados = yf.download(acao + '.SA', start=passado, end=hoje, actions=True)
         dados.to_csv(nomeArquivo)
         print(acao + ' Baixada!')
-    dividendos = dados['Dividends'].loc[dados['Dividends'] != 0]
-    dividendoTotal = dividendos.sum()
+    # dividendos = dados['Dividends'].loc[dados['Dividends'] != 0]
+    dividendoTotal = dados['Dividends'].sum()
     precoAtual = round(dados['Close'].iloc[-1], 2)
     precoJusto = round(dividendoTotal / (anos * 0.06), 2)
     precosJustos[acao] = round(precoAtual / precoJusto, 2)
