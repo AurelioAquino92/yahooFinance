@@ -4,7 +4,12 @@ from datetime import datetime
 import os
 import json
 
-anos = 3
+def converter_dados(dados):
+    dados = dados.reset_index()
+    dados['Date'] = pd.to_datetime(dados['Date']).dt.strftime('%Y-%m-%d')
+    return dados
+
+anos = 5
 acoes = [
     'ITSA4',
     'TAEE11',
@@ -41,16 +46,19 @@ for acao in acoes:
         dados.to_csv(nomeArquivo)
         print(acao + ' Baixada!')
     
-    ultimaData = datetime.strptime(dados['Date'].iloc[-1], '%Y-%m-%d')
+    try:
+        ultimaData = datetime.strptime(dados['Date'].iloc[-1], '%Y-%m-%d')
+    except:
+        dados = converter_dados(dados)
+        ultimaData = datetime.strptime(dados['Date'].iloc[-1], '%Y-%m-%d')
+
     if (hoje-ultimaData).days > 0:
         print('Atualizando', acao, '...')
         dataInicio = ultimaData.replace(day=ultimaData.day+1)
         dados2 = yf.download(acao+'.SA', start=dataInicio, end=hoje, actions=True)
         dados = pd.concat([dados.set_index('Date'), dados2])
-        dados = dados.reset_index()
-        dados['Date'] = pd.to_datetime(dados['Date']).dt.strftime('%Y-%m-%d')
+        dados = converter_dados(dados)
         dados = dados.set_index('Date')
-        print(dados)
         dados.to_csv(nomeArquivo)
         print(acao, 'atualizada!')
     
