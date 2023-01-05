@@ -30,7 +30,8 @@ if not os.path.exists(dataDiretory):
 
 precosJustos = {}
 for acao in acoes:
-    nomeArquivo = dataDiretory + acao + '_' + str(anos) + 'anos_' + hoje.strftime('%Y-%m-%d') + '.csv'
+    nomeArquivo = dataDiretory + acao + '.csv'
+    
     try:
         dados = pd.read_csv(nomeArquivo)
     except Exception as err:
@@ -39,8 +40,23 @@ for acao in acoes:
         dados = yf.download(acao + '.SA', start=passado, end=hoje, actions=True)
         dados.to_csv(nomeArquivo)
         print(acao + ' Baixada!')
-    # dividendos = dados['Dividends'].loc[dados['Dividends'] != 0]
-    dividendoTotal = dados['Dividends'].sum()
+    
+    ultimaData = datetime.strptime(dados['Date'].iloc[-1], '%Y-%m-%d')
+    if (hoje-ultimaData).days > 0:
+        print('Atualizando', acao, '...')
+        dataInicio = ultimaData.replace(day=ultimaData.day+1)
+        dados2 = yf.download(acao+'.SA', start=dataInicio, end=hoje, actions=True)
+        dados = pd.concat([dados.set_index('Date'), dados2])
+        dados = dados.reset_index()
+        dados['Date'] = pd.to_datetime(dados['Date']).dt.strftime('%Y-%m-%d')
+        dados = dados.set_index('Date')
+        print(dados)
+        dados.to_csv(nomeArquivo)
+        print(acao, 'atualizada!')
+    
+    dados = dados.reset_index()
+    dados['Date'] = pd.to_datetime(dados['Date'])
+    dividendoTotal = dados[dados['Date'] >= passado]['Dividends'].sum()
     precoAtual = round(dados['Close'].iloc[-1], 2)
     precoJusto = round(dividendoTotal / (anos * 0.06), 2)
     precosJustos[acao] = round(precoAtual / precoJusto, 2)
